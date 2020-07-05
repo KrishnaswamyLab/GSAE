@@ -1,12 +1,12 @@
 
 <div align="center">    
  
-# Your Project Name     
+# Uncovering the Folding Landscape of RNA Secondary Structure with Deep Graph Embeddings
 
-[![Paper](http://img.shields.io/badge/paper-arxiv.1001.2234-B31B1B.svg)](https://www.nature.com/articles/nature14539)
-[![Conference](http://img.shields.io/badge/NeurIPS-2019-4b44ce.svg)](https://papers.nips.cc/book/advances-in-neural-information-processing-systems-31-2018)
-[![Conference](http://img.shields.io/badge/ICLR-2019-4b44ce.svg)](https://papers.nips.cc/book/advances-in-neural-information-processing-systems-31-2018)
-[![Conference](http://img.shields.io/badge/AnyConference-2020r-4b44ce.svg)](https://papers.nips.cc/book/advances-in-neural-information-processing-systems-31-2018)  
+[![Paper](http://img.shields.io/badge/paper-arxiv.2006.06885.svg)](https://arxiv.org/abs/2006.06885)
+
+[![Conference](http://img.shields.io/badge/ICLRGRL+-2020-4b44ce.svg)](https://papers.nips.cc/book/advances-in-neural-information-processing-systems-31-2018)  
+
 <!--
 ARXIV   
 [![Paper](http://img.shields.io/badge/arxiv-math.co:1480.1111-B31B1B.svg)](https://www.nature.com/articles/nature14539)
@@ -53,10 +53,10 @@ List your baselines here.
 
 ### Citation   
 ```
-@article{YourName,
-  title={Your Title},
-  author={Your team},
-  journal={Location},
-  year={Year}
+@article{castro2020uncovering,
+  title={Uncovering the Folding Landscape of RNA Secondary Structure with Deep Graph Embeddings},
+  author={Castro, Egbert and Benz, Andrew and Tong, Alexander and Wolf, Guy and Krishnaswamy, Smita},
+  journal={arXiv preprint arXiv:2006.06885},
+  year={2020}
 }
 ```   
