@@ -2,12 +2,12 @@
 
 from setuptools import setup, find_packages
 
-setup(name='src',
+setup(name='GSAE',
       version='0.0.1',
-      description='Describe Your Cool Project',
+      description='Graph Scattering Autoencoder',
       author='',
       author_email='',
-      url='https://github.com/williamFalcon/pytorch-lightning-conference-seed',  # REPLACE WITH YOUR OWN GITHUB PROJECT LINK
+      url='https://github.com/ec1340/GSAE',
       install_requires=[
             'pytorch-lightning'
       ],
