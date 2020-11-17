@@ -5,11 +5,12 @@ from setuptools import setup, find_packages
 setup(name='GSAE',
       version='0.0.1',
       description='Graph Scattering Autoencoder',
-      author='',
-      author_email='',
+      author='Egbert Castro',
+      author_email='egbert.castro@yale.edu',
       url='https://github.com/ec1340/GSAE',
       install_requires=[
-            'pytorch-lightning'
+            'pytorch-lightning',
+            'torch'
       ],
       packages=find_packages()
       )
