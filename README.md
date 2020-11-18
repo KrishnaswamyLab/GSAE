@@ -116,6 +116,25 @@ sample usage:
     adj2scatcoeffs.py
 
 
+## Data
+
+Data for the 4 sequences used in the paper are located in data/
+
+
+    └── raw_data
+        ├── hiv_tar
+        │   ├── hiv_tar_sequence.txt
+        │   ├── hivtar_100k_subp_n_052020.txt
+        ├── hob_seq3
+        │   ├── seq3_100k_subp_n_052020.txt
+        │   └── seq3_sequence.txt
+        ├── hob_seq4
+        │   ├── seq4_100k_subp_n_052020.txt
+        │   └── seq4_sequence.txt
+        └── tebown
+            ├── teb_100k_subp_n_052020.txt
+            └── tebown_sequence.txt
+
 
 ## IMPORTANT: Data loading for models
 
