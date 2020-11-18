@@ -1,3 +1,5 @@
 pytorch-lightning==1.0.3
 torch==1.7.0
 torchvision==0.8.1
+wandb==0.9.1
+networkx==2.4

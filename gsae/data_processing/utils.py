@@ -11,7 +11,6 @@ import re
 import math
 import os
 import glob
-import phate
 import random
 
 from numpy import linalg as LA

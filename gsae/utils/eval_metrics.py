@@ -6,7 +6,6 @@ import math
 from tqdm import tqdm
 import os
 import glob
-import phate
 import random
 
 from numpy import linalg as LA
