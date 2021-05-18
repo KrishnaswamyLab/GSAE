@@ -5,18 +5,3 @@ networkx==2.4
 tqdm==4.60.0
 scikit-learn>=0.23.1
 einops>=0.3.0
-
-
-torch-scatter
-torch-sparse
-torch-cluster
-torch-spline-conv
-torch-geometric
-
-
-
-pip install torch-scatter -f https://pytorch-geometric.com/whl/torch-1.7.1+cpu.html
-pip install torch-sparse -f https://pytorch-geometric.com/whl/torch-1.7.1+cpu.html
-pip install torch-cluster -f https://pytorch-geometric.com/whl/torch-1.7.1+cpu.html
-pip install torch-spline-conv -f https://pytorch-geometric.com/whl/torch-1.7.1+cpu.html
-pip install torch-geometric

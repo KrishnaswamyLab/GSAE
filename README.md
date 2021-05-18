@@ -40,7 +40,7 @@ pip install -r requirements.txt
  
  # Workflow
 
-## 1. loading data from RNAfold
+## 1. Loading data from RNAfold
 ---
 
 
@@ -166,6 +166,9 @@ Data for the 4 sequences used in the paper are located in data/
 ## IMPORTANT: Data loading for models
 
 In order to ensure that the training scripts in the model files function correctly, the `ROOT_DIR` variable at the top of `load_splits.py` to where the train/test split is located 
+
+
+In the repo, we set ROOT_DIR = data/final_data/`, where we include split data for SEQ3 and SEQ4. We omit most of the processed and final datasets here in this repo due to their large size. 
 
 ## Training the models
 
