@@ -1,10 +1,5 @@
 
-from argparse import ArgumentParser
-import datetime
-import os
-import numpy as np
 
-from sklearn.metrics import roc_auc_score, average_precision_score,accuracy_score, precision_score, recall_score
 
 import torch
 import torch.utils.data
@@ -14,20 +9,15 @@ from torch.nn import functional as F
 # from torchvision.utils import save_image, make_grid
 
 from torch_geometric.nn import DenseGCNConv, SAGEConv
-from torch_geometric.data import Data, DataLoader
 
 import pytorch_lightning as pl
-from pytorch_lightning.loggers import WandbLogger
-from pytorch_lightning.callbacks.early_stopping import EarlyStopping
+
+from gsae.utils import gnn_modules
 
 
-from gsae.utils import eval_metrics, load_splits, gnn_modules
-
-
-
-class GNN_AE_pool(pl.LightningModule):
+class GAE(pl.LightningModule):
     def __init__(self, hparams):
-        super(GNN_AE_pool, self).__init__()
+        super(GAE, self).__init__()
         
         self.hparams = hparams
         
@@ -233,48 +223,6 @@ class GNN_AE_pool(pl.LightningModule):
                                             alpha=self.hparams.alpha, batch_idx=batch_idx)
             
         return {'loss': loss, 'log': log_losses}
-        
-    def prepare_data(self):
-        
-        
-        _, train_tup, test_tup = eval('load_splits.load_{}(gnn=True)'.format(self.hparams.dataset))
-
-        # train dataset
-        train_dataset = torch.utils.data.TensorDataset(*train_tup)
-        # test_dataset = torch.utils.data.TensorDataset(*test_tup)
-
-        # get valid set
-        train_set, val_set = torch.utils.data.random_split(train_dataset, [55000, 15000])
-
-        # train loader
-        train_loader = torch.utils.data.DataLoader(train_set, batch_size=self.hparams.batch_size,
-                                        shuffle=True)
-
-        # valid loader 
-        valid_loader = torch.utils.data.DataLoader(val_set, batch_size=self.hparams.batch_size,
-                                        shuffle=False)
-
-        # test loader
-        # test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=self.hparams.batch_size,
-        #                                 shuffle=False)
-
-
-        # save to system
-        self.len_ep = len(train_loader)
-
-        self.train_data = train_loader
-        self.valid_data = valid_loader
-        # self.test_data = test_loader
-
-
-    def train_dataloader(self):
-        return self.train_data
-
-    def val_dataloader(self):
-        return self.valid_data
-        
-    # def test_dataloader(self):
-    #     return self.test_data
 
 
     def validation_step(self, batch, batch_idx):
@@ -306,169 +254,4 @@ class GNN_AE_pool(pl.LightningModule):
                             'val_pred_loss':avg_regloss}
 
         return {'val_loss': avg_loss, 'log': tensorboard_logs}
-
-    # def test_step(self, batch):
-    #     x, adj, y  = batch
-
-    #     adj_hat, y_hat = self(x,adj)
-
-    #     # reconstruction loss
-    #     ap_val = average_precision_score(adj.flatten(),
-    #                                     adj_hat.flatten().detach().numpy()) 
-
-    #     ap_val = torch.Tensor(ap_val)
-        
-    #     # regression loss
-    #     reg_loss = nn.MSELoss(reduction='sum')(y_hat.reshape(-1), y.reshape(-1)) 
-    
-    #     total_loss = ap_val  +  reg_loss
-
-    #     log_losses = { 'test_loss': total_loss,
-    #                 'test_AP' : ap_val,
-    #                 'test_pred_loss' :reg_loss.detach()}
-
-    #     return log_losses
-
-    # def test_epoch_end(self, outputs):
-    #     avg_loss = torch.stack([x['test_loss'] for x in outputs]).mean()
-    #     avg_AP = torch.stack([x['test_AP'] for x in outputs]).mean()
-    #     avg_regloss = torch.stack([x['test_pred_loss'] for x in outputs]).mean()
-
-    #     tensorboard_logs = {'test_loss': avg_loss,
-    #                         'test_AP': avg_AP,
-    #                         'test_pred_loss':avg_regloss}
-
-    #     return {'test_loss': avg_loss, 'log': tensorboard_logs}
-
-    def configure_optimizers(self):
-        return torch.optim.Adam(self.parameters(), lr=self.hparams.learning_rate)
-
-
-
-if __name__ == '__main__':
-
-    parser = ArgumentParser(add_help=False)
-
-    parser.add_argument('--input_dim', default=32, type=int)
-    parser.add_argument('--node_dim', default=50, type=int)
-    parser.add_argument('--dataset', default='seq3', type=str)
-    parser.add_argument('--gnn_type', default='gcn', type=str)
-    parser.add_argument('--pool_type', default='stat', type=str)
-    parser.add_argument('--bottle_dim', default=25, type=int)
-    parser.add_argument('--hidden_dim', default=400, type=int)
-    parser.add_argument('--learning_rate', default=0.0001, type=float)
-
-    parser.add_argument('--alpha', default=0.5, type=float)
-    parser.add_argument('--n_epochs', default=100, type=int)
-    parser.add_argument('--batch_size', default=100, type=int)
-    parser.add_argument('--n_gpus', default=1, type=int)
-
-    parser.add_argument('--save_dir', default='train_logs/', type=str)
-
-    cl_args = parser.parse_args()
-
-    # add args from trainer
-    parser = pl.Trainer.add_argparse_args(parser)
-
-    # parse params
-    args = parser.parse_args()
-
-    # get data
-    # train_loader, train_tup, test_tup = eval('load_splits.load_{}(gnn=True)'.format(args.dataset))
-    # len_ep = len(train_loader)
-
-    # logger
-    now = datetime.datetime.now()
-    date_suffix = now.strftime("%Y-%m-%d-%M")
-    save_dir =  args.save_dir + 'logs_run_{}_{}_{}/'.format(args.dataset, args.pool_type, date_suffix)
-
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
-
-    wandb_logger = WandbLogger(name='run_{}_{}_{}_{}_{}_{}'.format(args.dataset, args.pool_type, args.gnn_type, args.alpha, args.bottle_dim, date_suffix),
-                                project='rna_project', 
-                                log_model=True,
-                                save_dir=save_dir)
-                                
-    wandb_logger.log_hyperparams(cl_args.__dict__)
-
-
-    # early stopping 
-    early_stop_callback = EarlyStopping(
-            monitor='val_loss',
-            min_delta=0.00,
-            patience=3,
-            verbose=True,
-            mode='min'
-            )
-
-    # init module
-    model = GNN_AE_pool(hparams=args)
-
-    # most basic trainer, uses good defaults
-    trainer = pl.Trainer.from_argparse_args(args,
-                                            max_epochs=args.n_epochs,
-                                             gpus=args.n_gpus,
-                                            callbacks=[early_stop_callback],
-                                            logger=wandb_logger)
-    trainer.fit(model)
-
-
-    # 1. save embeddings
-    _, train_tup, test_tup = eval('load_splits.load_{}(gnn=True)'.format(args.dataset))
-
-    model = model.cpu()
-    model.dev_type = 'cpu'
-    with torch.no_grad():
-        train_embed = model.embed(train_tup[0], train_tup[1]) 
-        test_embed =  model.embed(test_tup[0], test_tup[1]) 
-
-    # save data
-    print('saving embeddings')
-    np.save(save_dir + "train_embedding.npy" , train_embed.cpu().detach().numpy() )
-    np.save(save_dir + "test_embedding.npy" , test_embed.cpu().detach().numpy() )
-
-
-    # EVALUATION ON TEST SET 
-    # energy pred mse
-
-    print("getting test set predictions")
-    with torch.no_grad():
-        adj_hat_test, y_pred_test = model(test_tup[0], test_tup[1])
-
-    # print("adj type: {}".format(test_tup[1].flatten().numpy()))
-    # print("adj_hat type: {}".format(adj_hat_test.flatten().detach().numpy()))
-
-    ap_test = average_precision_score(test_tup[1].flatten().numpy(),
-                                    adj_hat_test.flatten().detach().numpy())
-
-    pred_test = nn.MSELoss()(y_pred_test.flatten(), test_tup[-1])
-
-    print("logging test set metrics")
-    wandb_logger.log_metrics({'test_energy_mse':pred_test.numpy(),
-                                'test_AP': ap_test})
-
-
-    print("gathering eval subsets")
-    eval_tup_list = [eval_metrics.compute_subsample([test_embed, test_tup[-1]], 10000)[0] for i in range(8)]
-    # trainer.test()
-    print("getting smoothness vals")
-    embed_eval_array= np.expand_dims(np.array([x[0].numpy() for x in eval_tup_list]),0)
-    energy_eval_array= np.array([x[1].numpy() for x in eval_tup_list])
-
-    print('embed_eval_array shape: {}'.format(embed_eval_array.shape))
-    print('energy_eval_array shape: {}'.format(energy_eval_array.shape))
-    
-    energy_smoothness = eval_metrics.eval_over_replicates(embed_eval_array,
-                                                            energy_eval_array,
-                                                eval_metrics.get_smoothnes_kNN,
-                                                [5, 10])[0]
-
-    energy_smoothness = eval_metrics.format_metric(energy_smoothness)
-
-
-    wandb_logger.log_metrics({'e_smooth_k5_mean':energy_smoothness[0][0],
-                                'e_smooth_k10_mean': energy_smoothness[0][1],
-                                'e_smooth_k5_std': energy_smoothness[1][0],
-                                'e_smooth_k10_std': energy_smoothness[1][1]})
 

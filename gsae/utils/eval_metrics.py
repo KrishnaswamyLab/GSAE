@@ -1,32 +1,11 @@
 import numpy as np
 import networkx as nx
-import matplotlib.pyplot as plt
 
-import math
-from tqdm import tqdm
-import os
-import glob
-import random
 
-from numpy import linalg as LA
 from numpy.random import choice
-import scipy
-from sklearn.decomposition import PCA
-from sklearn.metrics.pairwise import euclidean_distances, rbf_kernel
 from sklearn.metrics import roc_auc_score, average_precision_score,accuracy_score, precision_score, recall_score
-from sklearn.model_selection import train_test_split
-from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
-from scipy.spatial import distance as scidist
+from sklearn.neighbors import kneighbors_graph
 
-
-import torch
-import torch.utils.data
-from torch import nn, optim
-from torch.nn import functional as F
-# from torchvision import datasets, transforms
-# from torchvision.utils import save_image, make_grid
-from torch.autograd import Variable
-from torch.nn import Parameter 
 
 
 ##############################
@@ -52,31 +31,6 @@ def compute_subsample(data, subsize=10000):
     sub_data = [x[sub_inds] for x in data]
 
     return sub_data, sub_inds
-
-
-def plot_loss_curves_VAE(loss_array):
-    plt.figure(figsize=(8,4))
-    plt.style.use('seaborn-deep')
-
-    plt.plot(np.arange(loss_array.shape[0]), loss_array[:,0], label='recon')
-    plt.plot(np.arange(loss_array.shape[0]), loss_array[:,1], label = 'smooth')
-    plt.plot(np.arange(loss_array.shape[0]), loss_array[:,2], label='KL')
-    plt.title('loss curves')
-    plt.legend()
-    
-    plt.show()
-
-
-def plot_loss_curves_AE(loss_array):
-    plt.figure(figsize=(8,4))
-    plt.style.use('seaborn-deep')
-
-    plt.plot(np.arange(loss_array.shape[0]), loss_array[:,0], label='recon')
-    plt.plot(np.arange(loss_array.shape[0]), loss_array[:,1], label = 'smooth')
-    plt.title('loss curves')
-    plt.legend()
-    
-    plt.show()
 
 
 
@@ -201,36 +155,6 @@ def eval_over_replicates(embeddings_reps, energy_reps,
 
     return np.reshape(smooth_val_array, (n_reps, n_gamma_vals, len(val_range)))
 
-    
-###########################
-# VIZ UTILS
-##########################
-def plot_gamma_error_plots(gamma_values, smooth_means, smooth_std, hyp_vals, param='k'):
-
-    fig, ax = plt.subplots(figsize=(7,4))
-    
-    for indx, val in enumerate(hyp_vals):
-        ax.errorbar(gamma_values, smooth_means[:,indx] ,
-                     smooth_std[:,indx], fmt='-o', label='{}={}'.format(param,val))
-
-    ax.set_xlabel('gamma value')
-    ax.set_ylabel('smoothness index')
-
-    plt.legend()
-    
-    plt.show()
-    
-
-def plot_gamma_single_error(gamma_values, error_means, error_stds, xlabel='gamma val', ylabel='MSE prediction'):
-
-    fig, ax = plt.subplots(figsize=(7,4))
-
-    plt.errorbar(gamma_values, error_means , error_stds, fmt='-o')
-
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    
-    plt.show()
     
 
 

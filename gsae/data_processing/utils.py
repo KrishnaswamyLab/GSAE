@@ -15,7 +15,6 @@ import random
 
 from numpy import linalg as LA
 from numpy.random import choice
-import scipy
 
 
 
@@ -338,4 +337,11 @@ def convertadj2db(adj):
     return "".join(db_string)
             
             
-
+def load_dat(file):
+    if file.split('.')[-1] == 'csv':
+        dat = np.loadtxt(file, delimiter=',')
+    elif file.split('.')[-1] == 'npy':
+        dat = np.load(file)
+    else:
+        raise NotImplementedError
+    return dat

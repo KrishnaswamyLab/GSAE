@@ -27,20 +27,24 @@ First, install dependencies
 # clone project   
 git clone https://github.com/ec134/GSAE   
 
+# IT IS RECOMMENDED THAT YOU WORK WITHIN A VIRTUAL ENVIRONMENT
 # install project   
 cd GSAE
 pip install -e .   
 pip install -r requirements.txt
+
  ```   
  
+ You will also need to install PyTorch Geometric. Instructions for doing so can be found [here](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html)
  
-# Workflow
+ 
+ # Workflow
 
-## loading data from RNAfold
+## 1. loading data from RNAfold
 ---
 
 
-From rnafold, we get a file like the following
+From RNAfold, we get a file like the following
 
     rnafold_output.txt
 
@@ -56,6 +60,12 @@ which inside looks like
     ((.((..(((((....))))).....).).))  -5.10
     (((....(((((....))))).(...)..)))  -4.30
     (((....(((((....)))))(....)..)))  -5.30
+
+
+RNAfold output files used in the paper are included in 
+
+    data/raw_data/
+
 
 We can use `rnafold2arrays.py` in `gsae/data_processing` to convert this text file to
 
@@ -75,15 +85,19 @@ We can use `rnafold2arrays.py` in `gsae/data_processing` to convert this text fi
 sample usage:
 
     > python rnafold2arrays.py --data seq4_rnafold_out.txt --outname seq4
-    > ls
+
+
+Which will produce the following files
+
     seq4_adjmat_2020-03-04-03.csv
     seq4_energies_2020_03-04-03.csv
     seq4_sequence_2020-03-04-03.txt
-    rnafold2arrays.py
-    seq3_rnafold_out.py
 
 
-## Converting adjacency data to scattering coefficients
+#### If you would like to skip this step, ou can also download the processed files from this [box link](https://yale.box.com/s/3r539p1yp6aencpv8hlyexolq27yudpm)
+
+
+## 2. Converting adjacency data to scattering coefficients
 ---
 
 
@@ -93,28 +107,41 @@ Here we will use diracs centered at each node (i.e. the identity matrix) as our 
 
 To convert them, we will use `adj2scatcoeffs.py`
 
-`adj2scatcoeffs.py` usage:
-
-    usage: adj2scatcoeffs.py [-h] --data DATA --outname OUTNAME --graph_size
-                            GRAPH_SIZE [--pcs PCS]
+    usage: adj2scatcoeffs.py [-h] --data DATA --outname OUTNAME [--pcs PCS]
 
     optional arguments:
-    -h, --help            show this help message and exit
-    --data DATA           csv with adjacency matrices
-    --outname OUTNAME     base name for output
-    --graph_size GRAPH_SIZE
-                            number of nodes in graphs (assume equal size)
-    --pcs PCS             how many principle components to use (if 0, then use raw scattering coefficients)
+    -h, --help         show this help message and exit
+    --data DATA        file (npy or csv) with adjacency matrices
+    --outname OUTNAME  base name for output
+    --pcs PCS          how many principle components to use (if 0, then use raw scattering coefficients)
 
 sample usage:
 
-    > python adj2scatcoeffs.py --data seq4_adjmat_2020-03-04-03.csv --outname seq4 --graph_size 32 --pcs 100
+    > python adj2scatcoeffs.py --data seq4_adjmat_2020-03-04-03.csv --outname seq_4
 
-    > ls
-    seq4_scat_coeff_2020-03-04-03_pca_n100.csv
-    seq4_adjmat_2020-03-04-03.csv
-    adj2scatcoeffs.py
 
+## 3. Create Splits
+---
+
+
+Now that we've generated all the data our model will use, we can now create the train/test splits
+
+To convert them, we will use `create_splits.py`
+
+    usage: create_splits.py [-h] --adjs ADJS --coeffs COEFFS --energies ENERGIES --outname OUTNAME
+
+    optional arguments:
+    -h, --help           show this help message and exit
+    --adjs ADJS          file with adjacency matrices
+    --coeffs COEFFS      file with scattering coeffs
+    --energies ENERGIES  file with energy values
+    --outname OUTNAME    base name for output
+
+The output set of files can be then stored in a directory which we will later refer to as `ROOT_DIR` for the reason mentioned below
+
+## IMPORTANT: Data loading for models
+
+In order to ensure that the training scripts in the model files function correctly, the `ROOT_DIR` variable at the top of `load_splits.py` to where the train/test split is located 
 
 ## Data
 
@@ -138,18 +165,17 @@ Data for the 4 sequences used in the paper are located in data/
 
 ## IMPORTANT: Data loading for models
 
-In order to ensure that the training scripts in the model files function correctly, the global variables at the top of `load_splits.py`  must be assigned to whereever you save the outputs of `adj2scatcoeffs.py`. 
-
+In order to ensure that the training scripts in the model files function correctly, the `ROOT_DIR` variable at the top of `load_splits.py` to where the train/test split is located 
 
 ## Training the models
 
-    python gsae/models/gsae_model.py 
+To train the GSAE:
 
-  
-arguments:
+    python train_gsae.py
 
-    usage: gsae_model.py [--input_dim INPUT_DIM] [--dataset DATASET] [--bottle_dim BOTTLE_DIM] [--hidden_dim HIDDEN_DIM] [--learning_rate LEARNING_RATE] [--alpha ALPHA] [--beta BETA] [--n_epochs N_EPOCHS] [--batch_size BATCH_SIZE] [--n_gpus N_GPUS] [--save_dir SAVE_DIR]
+To train the GAE or GVAE models:
 
+    python train_gnn.py
 
 ### Citation   
 ```

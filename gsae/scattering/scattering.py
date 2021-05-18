@@ -1,23 +1,15 @@
 
-
-import math
-import os
-import random
 from tqdm import tqdm
 import numpy as np
 
 from numpy import linalg as LA
-from numpy.random import choice
-import scipy
-from sklearn.decomposition import PCA
-from sklearn.metrics.pairwise import euclidean_distances, rbf_kernel
 
 import torch
-from torch import nn, optim
 from torch.nn import functional as F
+from einops import rearrange
 
-from einops import rearrange, reduce
-from einops.layers.torch import Rearrange
+import scipy.stats as stats
+
 
 
 # create lazy random walk P, with column sum equals 1
@@ -53,13 +45,14 @@ def graph_wavelet(P, scales=[1,2,3,4]):
     return np.array(psi)
 
 
-def generate_graph_feature(A):
+def generate_graph_feature(A, ro=None):
     
     # constants
     N = A.shape[-1]
 
-    # signal = dirac
-    ro = np.eye(A.shape[0])
+    # use dirac signals if none provided
+    if ro == None:
+        ro = np.eye(A.shape[0])
 
     # create lazy random walk matrix
     P = lazy_random_walk(A)
@@ -110,38 +103,32 @@ def transform_dataset(folds_array):
 
 
 
-def get_normalized_moments(scat_coeff_array):
-    """ 
-    takes normalized moments across node dimension
-    """
+def get_normalized_moments(scatcoeff_array):
     
     all_norm_scatcoeffs = []
     
     for indx, entry in enumerate(tqdm(scatcoeff_array)):
-
-        zeroth_order = np.mean(scat_coeff_array,0).reshape(1,-1)
-
-        first_order = np.var(scat_coeff_array,0).reshape(1,-1)
-
-        skew = stats.skew(scat_coeff_array,bias=0,axis=0).reshape(1,-1)
-        skew = np.nan_to_num(skew,
-                            nan=0.0,
-                            posinf=0.0,
-                            neginf=0.0)
-
-
-        kurtosis = stats.kurtosis(scat_coeff_array,axis=0).reshape(1,-1)
-        kurtosis = np.nan_to_num(kurtosis,
-                                nan=0.0,
-                                posinf=0.0,
-                                neginf=0.0)
+        
+        # entry = N x F
+        
+        zeroth_order = np.mean(entry,0).reshape(1,-1)
+#         print('zero min: {}'.format(zeroth_order.min()))
+        
+        first_order = np.var(entry,0).reshape(1,-1)
+#         print('first_order min: {}'.format(first_order.min()))
+        
+        skew = stats.skew(entry,bias=0,axis=0).reshape(1,-1)
+#         print('skew min: {}'.format(skew.min()))
+        
+        kurtosis = stats.kurtosis(entry,axis=0).reshape(1,-1)
+#         print('kurtosis min: {}'.format(kurtosis.min()))
 
         normed_coeffs = np.concatenate((zeroth_order,
                                         first_order,
                                         skew, 
                                         kurtosis),1)
-                
+        
         all_norm_scatcoeffs.append(normed_coeffs)
     
     return np.array(all_norm_scatcoeffs)
-       
+        
