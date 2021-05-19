@@ -165,11 +165,6 @@ Data for the 4 sequences used in the paper are located in data/
             ├── teb_100k_subp_n_052020.txt
             └── tebown_sequence.txt
 
-
-## IMPORTANT: Data loading for models
-
-In order to ensure that the training scripts in the model files function correctly, the `ROOT_DIR` variable at the top of `load_splits.py` to where the train/test split is located. We omit the processed and final datasets here in this repo due to their large size. 
-
 ## Training the models
 
 To train the GSAE:
@@ -180,6 +175,9 @@ To train the GAE or GVAE models:
 
     python train_gnn.py
 
+The scattering inversion network if found ins 
+
+    gsae/models/inv_scattering.py
 ### Citation   
 ```
 @article{castro2020uncovering,
