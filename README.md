@@ -94,7 +94,7 @@ Which will produce the following files
     seq4_sequence_2020-03-04-03.txt
 
 
-#### If you would like to skip this step, ou can also download the processed files from this [box link](https://yale.box.com/s/3r539p1yp6aencpv8hlyexolq27yudpm)
+#### If you would like to skip this step, you can also download the processed files from this [box link](https://yale.box.com/s/3r539p1yp6aencpv8hlyexolq27yudpm).  The file is named **processed_data.tar.gz**
 
 
 ## 2. Converting adjacency data to scattering coefficients
@@ -119,7 +119,7 @@ sample usage:
 
     > python adj2scatcoeffs.py --data seq4_adjmat_2020-03-04-03.csv --outname seq_4
 
-
+#### If you would like to skip this step, you can also download the processed files from this [box link](https://yale.box.com/s/3r539p1yp6aencpv8hlyexolq27yudpm). The file is named **scattering_coeffs.tar.gz**
 ## 3. Create Splits
 ---
 
@@ -139,9 +139,12 @@ To convert them, we will use `create_splits.py`
 
 The output set of files can be then stored in a directory which we will later refer to as `ROOT_DIR` for the reason mentioned below
 
+#### If you would like to skip this step, you can also download the processed files from this [box link](https://yale.box.com/s/3r539p1yp6aencpv8hlyexolq27yudpm). The file is named **final_splits.tar.gz**
+
 ## IMPORTANT: Data loading for models
 
 In order to ensure that the training scripts in the model files function correctly, the `ROOT_DIR` variable at the top of `load_splits.py` to where the train/test split is located 
+
 
 ## Data
 
