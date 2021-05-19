@@ -180,10 +180,12 @@ The scattering inversion network if found ins
     gsae/models/inv_scattering.py
 ### Citation   
 ```
-@article{castro2020uncovering,
-  title={Uncovering the Folding Landscape of RNA Secondary Structure with Deep Graph Embeddings},
+@inproceedings{castro2020uncovering,
+  title={Uncovering the Folding Landscape of RNA Secondary Structure Using Deep Graph Embeddings},
   author={Castro, Egbert and Benz, Andrew and Tong, Alexander and Wolf, Guy and Krishnaswamy, Smita},
-  journal={arXiv preprint arXiv:2006.06885},
-  year={2020}
+  booktitle={2020 IEEE International Conference on Big Data (Big Data)},
+  pages={4519--4528},
+  year={2020},
+  organization={IEEE}
 }
 ```   
